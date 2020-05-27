@@ -1,5 +1,3 @@
-install.packages("VennDiagram")
-install.packages("tidyverse")
 library(VennDiagram)
 library(readxl)
 library(tidyverse)
