@@ -17,7 +17,7 @@ perl -pe '
 # The reverse flag on the first key ensures the header stays at the top.
 sort -k8,8 -k1,1Vr -k2,2V -k5,5n |
 # add a Parent attribute to the consecutive lines that are
-# on the same seqname, same strand and within 200,000 nt of each other.
+# on the same seqname, same strand and within 500,000 nt of each other.
 perl -ape '
   use constant {target => 0, seqname => 1, type => 3, start => 4, end => 5};
   next if /\#/ ;
@@ -27,7 +27,7 @@ perl -ape '
   $parent = "$F[target]_$F[start]"
     unless ($P[target]      eq $F[target]  &&
             $P[seqname]     eq $F[seqname] &&
-            $P[end] + 200000 > $F[start]) ;
+            $P[end] + 500000 > $F[start]) ;
   @P = @F ;
   $_ = "$_;Parent=$parent\n"
 ' |
