@@ -13,9 +13,9 @@ perl -pe '
   ($target) = /Parent=(.+?)[\.:]/ if /\tmatch_part\t/ ;
   $_ = join "\t", $target, $_
 ' |
-# Sort on first field, then strand, then seqname, then start position.
+# Sort on strand, then first field, then seqname, then start position.
 # The reverse flag on the first key ensures the header stays at the top.
-sort -k1,1Vr -k7,7 -k2,2V -k5,5n |
+sort -k8,8 -k1,1Vr -k2,2V -k5,5n |
 # add a Parent attribute to the consecutive lines that are
 # on the same seqname, same strand and within 200,000 nt of each other.
 perl -ape '
