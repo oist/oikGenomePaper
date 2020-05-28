@@ -1,0 +1,233 @@
+---
+title: "Circos_plot"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+library(BSgenome.Odioica.local.Okinawa.I69)
+library(GenomicBreaks)
+library(readr)
+library(circlize)
+library(RColorBrewer)
+```
+
+
+## Data
+
+```{r}
+#### Norway linkage groups ###
+
+# Y chr
+n_y <- c(356, 8, 181, 29, 134, 289, 140, 158, 206, 318, 123, 271, 76, 89, 76, 89, 146, 8, 143, 55, 99, 154, 8, 8, 22, 106, 
+         238, 346, 46, 29, 74, 112, 74, 61, 99, 61, 260, 368)
+
+# Y-like (B)
+n_y_B <- c(82, 261, 219, 88, 44, 164, 186)
+
+# X chr
+n_x <- c(361, 160, 272, 67, 337, 148, 144, 209, 32, 150, 32, 210, 161, 75, 45, 52, 17, 36, 6, 65, 330, 65, 30, 26, 229, 
+         103, 359, 35, 20, 35, 20, 58, 34, 240, 117, 42, 239, 283, 13, 119, 211, 195, 119, 21, 23, 189, 23, 332, 328, 
+         265, 192, 147, 196, 223, 228, 86, 2, 130, 193, 243, 180, 139, 170, 114, 111, 233, 339, 282, 100, 173)
+
+# Pseudo-autosomal LG 
+n_pa <- c(73, 11, 83, 37, 49, 216, 49, 133, 49, 259, 33, 121, 33, 121, 80, 390, 157, 100, 157, 31, 342, 31, 262, 327, 16, 
+          267, 16, 274, 16, 245, 16, 312, 38, 264, 38, 124, 377, 83, 371, 41, 155, 125, 142, 248, 357, 10, 10, 107, 85, 
+          194, 311, 25, 19, 64, 341, 104, 255, 10, 87, 257, 313, 293, 145, 48, 298, 48, 135, 50, 303, 226, 91, 95, 294, 
+          277, 122, 352, 315, 296, 244, 120, 208, 249, 169, 118, 58, 62, 187, 51, 92, 200, 101, 322, 251, 188, 69, 316, 
+          225, 69, 218, 18, 266, 18, 183, 18, 176, 320, 72)
+
+# LG1
+n_lg1 <- c(199, 2, 395, 12, 236, 28, 4, 14, 4, 263, 4, 3, 24, 40, 363, 40, 77, 68, 137, 78, 66)
+
+# LG2
+n_lg2 <- c(366, 97, 81, 198, 81, 43, 177, 43, 98, 109, 372, 7, 250, 7, 27, 212, 254, 39, 241, 39, 15, 258, 8, 8, 284, 349, 
+           224, 59, 5, 178, 5, 3, 1, 110, 70, 203, 141, 57, 9, 286, 71, 159, 197, 105, 149, 191)
+
+# not placed
+n_np <- c(102, 227, 151, 297, 344, 365, 60, 329, 153, 56, 93, 90, 47, 94, 84, 220, 232, 54, 179, 152, 115, 256, 79, 190, 
+          261, 231, 246, 162, 217, 205, 301, 253, 201, 300, 116, 53, 126, 131, 235, 132, 127, 53)
+
+```
+
+
+
+```{r}
+un_y <- unique(n_y)
+
+un_y_B <- unique(n_y_B)
+
+un_x <- unique(n_x)
+
+un_pa <- unique(n_pa)
+
+un_lg1 <- unique(n_lg1)
+
+un_lg2 <- unique(n_lg2)
+
+un_np <- unique(n_np)
+
+match_list <- list(un_y, un_y_B, un_x, un_pa, un_lg1, un_lg2, un_np)
+
+match_mat <- matrix(data = NA, ncol = 7, nrow = 7)
+rownames(match_mat) <- c("Y", "Y-like", "X", "PA", "LG1", "LG2", "np")
+colnames(match_mat) <- c("Y", "Y-like", "X", "PA", "LG1", "LG2", "np")
+
+for (i in 1:7){
+  for (j in 1:7){
+    if (i == j){
+      next()
+    }
+    else{
+      i_v <- match_list[[i]]
+      j_v <- match_list[[j]]
+      if (any((is.na(match(i_v, j_v))) == FALSE)){
+        match_mat[i,j] <- TRUE
+      }
+    }
+  }
+}
+
+
+# remove 2 from chr X
+# remove 8 from chr Y & LG2 (*ACTUALLY* include now)
+# romove 100 & 58 from chr X and PS region
+# include 3 in lg1 & lg2
+
+```
+
+```{r update scaffold lists}
+un_x <- un_x[!(un_x == 2)]
+un_y <- un_y[!(un_y == 8)]
+un_lg2 <- un_lg2[!(un_lg2 == 8)]
+un_x <- un_x[!(un_x == 100)]
+un_pa <- un_pa[!(un_pa == 100)]
+
+# concatenate all
+lgs <- c(un_y, un_y_B, un_x, un_pa, un_lg1, un_lg2)
+lgs_names <- c(rep("Y", length(un_y)), rep("Y-like", length(un_y_B)), rep("X", length(un_x))
+               , rep("PA", length(un_pa)), rep("LG1", length(un_lg1)), rep("LG2", length(un_lg2)))
+lgs_names[which(lgs == 3)] <- "LG1 & LG2"
+
+#lgs.data <- data.frame(names = lgs_names, nor_scaf = lgs)
+#lgs.data$names[lgs.data$nor_scaf == 3] <- "LG1 & LG2"
+```
+
+
+```{r data}
+
+pw_O_N <- rtracklayer::import.bed("C:/Users/CHARLOTTE-WEST/R-Packages/Oki_Nor_Circos_Plot/data/I69-4__Norway.bed", seqinfo = seqinfo(BSgenome.Odioica.local.Okinawa.I69))
+
+pw_O_N$query <- GRanges(pw_O_N$name)
+pw_O_N$name <- NULL
+pw_O_N$score <- NULL
+```
+
+```{r}
+# We require info only from scaffolds 1-5 of I69-4
+s1 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_1")
+s2 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_2")
+s3 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_3")
+s4 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_4")
+s5 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_5")
+
+s1_5 <- c(s1, s2, s3, s4, s5)
+
+red_O_N <- pw_O_N[s1_5]
+```
+
+```{r assigning LGs}
+# norway aligned scaffold numbers
+nor_a_scafs <- readr::parse_number(as.vector(seqnames(red_O_N$query)))
+nor_a_match <- match(nor_a_scafs, lgs)
+nor_LG <- lgs_names[nor_a_match]
+
+red_O_N$LG <- nor_LG
+
+# Norway scaffold 3 on lg1 and lg2
+#red_O_N$LG[(seqnames(red_O_N$query) == "scaffold_3") & (end(red_O_N$query) < 70000)] <- "LG2"
+#red_O_N$LG[(seqnames(red_O_N$query) == "scaffold_3") & (end(red_O_N$query) >= 70000)] <- "LG1"
+idx1 <- as.vector((seqnames(red_O_N$query) == "scaffold_3") & (end(red_O_N$query) < 70000))
+idx2 <- as.vector((seqnames(red_O_N$query) == "scaffold_3") & (end(red_O_N$query) >= 70000))
+red_O_N$LG[idx1] <- "LG1"
+red_O_N$LG[idx2] <- "LG2"
+
+#Norway scaffold 8 on Y and lg2
+idx1 <- as.vector((seqnames(red_O_N$query) == "scaffold_8") & (end(red_O_N$query) < 815000))
+idx2 <- as.vector((seqnames(red_O_N$query) == "scaffold_8") & (end(red_O_N$query) < 1045000) & (end(red_O_N$query) > 950000))
+idx3 <- as.vector((seqnames(red_O_N$query) == "scaffold_8") & (end(red_O_N$query) > 1050000))
+idx4 <- as.vector((seqnames(red_O_N$query) == "scaffold_8") & (end(red_O_N$query) > 820000) & (end(red_O_N$query) < 940000))
+
+red_O_N$LG[idx1] <- "Y"
+red_O_N$LG[idx2] <- "Y"
+red_O_N$LG[idx3] <- "LG2"
+red_O_N$LG[idx4] <- "LG2"
+```
+
+```{r circos matrix}
+circ_mat <- matrix(data = NA, nrow = 5, ncol = 7)
+#rownames(circ_mat) <- seqlevelsInUse(red_O_N) #HiC_scaffolds 1-5
+#rownames(circ_mat) <- c("chr X", "chr 1", "chr 2", "PA", "chr Y") #1-5
+rownames(circ_mat) <- c("chr X", "PA", "chr 2", "chr 1", "chr Y") #1-5
+#colnames(circ_mat) <- c("N chr X", "N LG1", "N LG2", "N PA", "N chr Y", "N other", "none") #1-7
+colnames(circ_mat) <- c("N chr X", "N PA", "N LG2", "N LG1", "N chr Y", "N other", "none") #1-7
+LG_names <- c("X", "PA", "LG2", "LG1", "Y")
+
+for (i in 1:5){
+  scaf_now <- seqlevelsInUse(red_O_N)[i]
+  gr_now <- red_O_N[seqnames(red_O_N) == scaf_now]
+  for (j in 1:7){
+    if (j < 6){
+      idx <- gr_now$LG == LG_names[j]
+      idx[is.na(idx)] <- FALSE
+      circ_mat[i,j] <- sum(width(gr_now[idx]))
+    }
+    else if (j == 6){
+      circ_mat[i,j] <- sum(width(gr_now[is.na(gr_now$LG)]))
+    }
+    else if (j == 7){
+      circ_mat[i,j] <- as.numeric(seqlengths(red_O_N)[i]) - sum(width(gr_now))
+    }
+  }
+}
+```
+
+```{r circos plot}
+# colours
+#RColorBrewer::brewer.pal(n = 9, name = "BuPu")
+# c("#F7FCFD", "#E0ECF4", "#BFD3E6", "#9EBCDA", "#8C96C6", "#8C6BB1", "#88419D", "#810F7C", "#4D004B")
+iro1 <- c("#E0ECF4", "#9EBCDA", "#8C96C6", "#88419D", "#810F7C", "#4D004B")
+grid.col1 <- c("#4D004B", "#810F7C", "#88419D", "#8C96C6", "#9EBCDA", "#E0ECF4", "#9EBCDA", "#8C96C6", "#88419D", "#810F7C", "#4D004B")
+
+# RColorBrewer::brewer.pal(n = 8, name = "Set2")
+# "#66C2A5" "#FC8D62" "#8DA0CB" "#E78AC3" "#A6D854" "#FFD92F" "#E5C494" "#B3B3B3"
+iro2 <- c("#66C2A5", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#B3B3B3")
+grid.col2 <- c("#66C2A5", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#B3B3B3", "#FFD92F", "#A6D854", "#E78AC3", "#8DA0CB", "#66C2A5")
+
+circos.clear()
+circos.par(start.degree = 90, clock.wise = FALSE)
+
+# with none
+#chordDiagram(circ_mat)
+
+# without none
+circ_mat_red <- circ_mat[,1:6]
+#chordDiagram(circ_mat_red)
+
+# reordered without none
+circ_mat_red_or <- circ_mat_red[, c(5,4,3,2,1,6)]
+chordDiagram(circ_mat_red_or, annotationTrack = c("name", "grid"), 
+             order = c("chr Y", "chr X", "chr 1", "chr 2", "PA", "N other", "N PA", "N LG2", "N LG1", "N chr X", "N chr Y"), grid.col = grid.col2)
+
+
+
+#c("N chr Y", "N chr X", "N LG1", "N LG2", "N PA", "N other", "PA", "chr 2", "chr 1", "chr X", "chr Y"))
+
+# reordered with none 
+#circ_mat_or <- circ_mat[, c(5, 4, 3, 2, 1, 6, 7)]
+#chordDiagram(circ_mat_or)
+```
+
