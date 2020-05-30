@@ -6,10 +6,10 @@ use constant {seqid  => 0, source => 1, type  => 2,
               score  => 5, strand => 6, phase => 7, attrs => 8} ;
 
 my @line                        ;
-@line[source] = "ultra2gff3.pl" ;
-@line[type]   = "tandem_repeat" ;
-@line[phase]  = "."             ;
-@line[strand] = "+"             ;
+$line[source] = "ultra2gff3.pl" ;
+$line[type]   = "tandem_repeat" ;
+$line[phase]  = "."             ;
+$line[strand] = "+"             ;
 
 my $headerIsOver = 0 ;
 
