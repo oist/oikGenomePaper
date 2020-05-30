@@ -13,6 +13,8 @@ $line[strand] = "+"             ;
 
 my $headerIsOver = 0 ;
 
+say "##gff-version 3" ;
+
 while (<>) {
   /PassID/                  and $headerIsOver = 1                         ;
   next unless $headerIsOver                                               ;
