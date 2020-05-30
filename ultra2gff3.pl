@@ -19,7 +19,7 @@ while (<>) {
   /PassID/                  and $headerIsOver = 1                         ;
   next unless $headerIsOver                                               ;
   /SequenceName.+?"(\w+)"/  and $line[seqid]  = $1                        ;
-  /Start.+?(\d+)/           and $line[start]  = $1                        ;
+  /Start.+?(\d+)/           and $line[start]  = 1 + $1                    ;
   /Length.+?(\d+)/          and $line[end]    = $line[start] + $1         ;
   /Period.+?(\d+)/          and $line[attrs]  = "Period=$1;" ; # Reset attrs
   /Score.+?([\d\.]+)/       and $line[score]  = $1                        ;
@@ -28,6 +28,6 @@ while (<>) {
   /Insertions.+?(\d+)/      and $line[attrs] .= "Insertions=$1;"          ;
   /Deletions.+?(\d+)/       and $line[attrs] .= "Deletions=$1;"           ;
   /Consensus.+?"(\w+)"/     and $line[attrs] .= "Consensus=$1;Name=$1;"   ;
-  /Sequence.+?"(\w+)"/      and $line[attrs] .= "Sequence=$1;"            ;
+#  /Sequence.+?"(\w+)"/      and $line[attrs] .= "Sequence=$1;"            ;
   /}/                       and say join "\t", @line
 }
