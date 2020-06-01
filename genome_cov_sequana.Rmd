@@ -1,0 +1,185 @@
+---
+title: "I69-4 Genome Assembly coverage (+sequana)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+library(dplyr)
+library(GenomicBreaks)
+library(BSgenome.Odioica.local.Okinawa.I69)
+library(readr)
+
+```
+
+```{r load in general multiqc stats}
+
+multiqc_general_stats <- read.delim("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/multiqc_general_stats.txt", header=FALSE)
+
+# reorder rows
+current_order <- readr::parse_number(as.vector(multiqc_general_stats[2:dim(multiqc_general_stats)[1],1]))
+desired_order <- 1:54
+idx_order <- match(desired_order, current_order) + 1
+idx_order <- c(1, idx_order)
+
+multiqc_general_stats <- multiqc_general_stats[idx_order,]
+```
+
+
+```{r load ROIs for scaffolds 1-5 & 40}
+rois_1 <- read.csv("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/rois_scaf_1.csv")
+rois_2 <- read.csv("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/rois_scaf_2.csv")
+rois_3 <- read.csv("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/rois_scaf_3.csv")
+rois_4 <- read.csv("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/rois_scaf_4.csv")
+rois_5 <- read.csv("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/rois_scaf_5.csv")
+rois_40 <- read.csv("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/rois_scaf_40.csv")
+
+# Convert to GRanges objects
+gr_rois_1 <- GRanges(seqnames = rois_1$chr, IRanges(start = rois_1$start, end = rois_1$end -1), seqinfo = seqinfo(BSgenome.Odioica.local.Okinawa.I69))
+gr_rois_2 <- GRanges(seqnames = rois_2$chr, IRanges(start = rois_2$start, end = rois_2$end -1), seqinfo = seqinfo(BSgenome.Odioica.local.Okinawa.I69))
+gr_rois_3 <- GRanges(seqnames = rois_3$chr, IRanges(start = rois_3$start, end = rois_3$end -1), seqinfo = seqinfo(BSgenome.Odioica.local.Okinawa.I69))
+gr_rois_4 <- GRanges(seqnames = rois_4$chr, IRanges(start = rois_4$start, end = rois_4$end -1), seqinfo = seqinfo(BSgenome.Odioica.local.Okinawa.I69))
+gr_rois_5 <- GRanges(seqnames = rois_5$chr, IRanges(start = rois_5$start, end = rois_5$end -1), seqinfo = seqinfo(BSgenome.Odioica.local.Okinawa.I69))
+gr_rois_40 <- GRanges(seqnames = rois_40$chr, IRanges(start = rois_40$start, end = rois_40$end -1), seqinfo = seqinfo(BSgenome.Odioica.local.Okinawa.I69))
+
+gr_rois_all <- c(gr_rois_1, gr_rois_2, gr_rois_3, gr_rois_4, gr_rois_5, gr_rois_40)
+```
+
+
+```{r load tandem repeats for I69-4}
+I69_tandem <- rtracklayer::import.gff3("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/I69-4.tantan.gff3", genome = seqinfo(BSgenome.Odioica.local.Okinawa.I69))
+
+I69_tandem$source <- NULL
+I69_tandem$type <- NULL
+I69_tandem$phase <- NULL
+```
+
+
+```{r load I69-4 per base coverage}
+# From bwa alignment
+#I69_cov <- rtracklayer::import.bed("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/I69-4_cov.bed")
+#I69_cov <- rtracklayer::import.bed("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/I69-4_coverage.bed")
+#start(I69_cov) <- start(I69_cov) - 1
+
+# From minimap 2 alignment
+I69_cov <- rtracklayer::import.bed("C:/Users/CHARLOTTE-WEST/R-Packages/I69-4_Coverage/data/I69-4_coverage_2col.bed")
+start(I69_cov) <- start(I69_cov) - 1
+```
+
+
+```{r transform gr_rois}
+# Choose tolerance for coalescing
+co_tol <- 10
+
+# Choose width for which any ROI of less than this width will be excluded
+min_width <- 3
+
+temp_rois_1 <- gr_rois_1
+temp_rois_1$name <- gr_rois_1
+temp_rois_2 <- gr_rois_2
+temp_rois_2$name <- gr_rois_2
+temp_rois_3 <- gr_rois_3
+temp_rois_3$name <- gr_rois_3
+temp_rois_4 <- gr_rois_4
+temp_rois_4$name <- gr_rois_4
+temp_rois_5 <- gr_rois_5
+temp_rois_5$name <- gr_rois_5
+temp_rois_40 <- gr_rois_40
+temp_rois_40$name <- gr_rois_40
+
+co_rois_1 <- coalesce_contigs(gr_ob = temp_rois_1, tol = co_tol)
+co_rois_2 <- coalesce_contigs(gr_ob = temp_rois_2, tol = co_tol)
+co_rois_3 <- coalesce_contigs(gr_ob = temp_rois_3, tol = co_tol)
+co_rois_4 <- coalesce_contigs(gr_ob = temp_rois_4, tol = co_tol)
+co_rois_5 <- coalesce_contigs(gr_ob = temp_rois_5, tol = co_tol)
+co_rois_40 <- coalesce_contigs(gr_ob = temp_rois_40, tol = co_tol)
+
+co_rois_1 <- co_rois_1[width(co_rois_1) > min_width]
+co_rois_2 <- co_rois_2[width(co_rois_2) > min_width]
+co_rois_3 <- co_rois_3[width(co_rois_3) > min_width]
+co_rois_4 <- co_rois_4[width(co_rois_4) > min_width]
+co_rois_5 <- co_rois_5[width(co_rois_5) > min_width]
+co_rois_40 <- co_rois_40[width(co_rois_40) > min_width]
+
+```
+
+
+Let us perform tandem correlation analysis on two different versions of the data: raw, and transformed. The transformed is as above ; ROIs are coalesced, and any single standing ROIs are omitted. Following this, similar analyses could be performed on over and under covered ROIs. 
+
+```{r correlation between increased variance and more hits with tandem repeats (raw data)}
+# tandem coverage related to just scaffolds 1, 2, 3, 4, 5 & 40
+I69_tandem_red <- I69_tandem[seqnames(I69_tandem) == "HiC_scaffold_1" | 
+                               seqnames(I69_tandem) == "HiC_scaffold_2" | 
+                               seqnames(I69_tandem) == "HiC_scaffold_3" | 
+                               seqnames(I69_tandem) == "HiC_scaffold_4" | 
+                               seqnames(I69_tandem) == "HiC_scaffold_5" | 
+                               seqnames(I69_tandem) == "HiC_scaffold_40"]
+
+# the number of bases covered by tandem repeats is:
+tandem_spread <- sum(width(I69_tandem_red))
+
+# intersection of ROIs with tandem coverage:
+int_tan_roi_raw <- intersect(I69_tandem_red, gr_rois_all)
+int_raw_spread <- sum(width(int_tan_roi_raw))
+
+# proportion of ROIs in tandem repeats:
+(int_raw_spread/tandem_spread)*100
+```
+
+
+```{r DOC}
+# DOC before removing any scaffolds
+# method 1 (easy summing)
+genome_length <- sum(seqlengths(BSgenome.Odioica.local.Okinawa.I69))
+total_cov <- sum(as.double(I69_cov$name))
+X_cov_raw1 <- total_cov/genome_length
+
+# method 2
+
+
+# DOC after removing scaffolds ...
+drop_21 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_21")
+
+drop_41 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_41")
+drop_42 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_42")
+
+drop_44 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_44")
+drop_45 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_45")
+drop_46 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_46")
+drop_47 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_47")
+drop_48 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_48")
+drop_49 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_49")
+drop_50 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_50")
+drop_51 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_51")
+
+drop_53 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_53")
+
+
+drop_54 <- which(as.vector(seqnames(I69_cov)) == "HiC_scaffold_54") #Psuedomonas, all other E.coli contamination
+
+drop_all <- c(drop_21, drop_41, drop_42, drop_44, drop_45, drop_46, drop_47, drop_48, drop_49, drop_50, drop_51, drop_53, drop_54)
+
+blop <- vector(mode = "logical", length = length(I69_cov))
+blop[drop_all] <- TRUE
+
+red_I69_cov <- I69_cov[!blop]
+
+red_total_cov <- sum(as.double(red_I69_cov$name))
+X_cov_red <- red_total_cov/genome_length
+```
+
+
+```{r BOC}
+#total BOC
+boc <- (length(I69_cov[I69_cov$name != 0]) / length(I69_cov))*100
+
+red_boc <- (length(red_I69_cov[red_I69_cov$name != 0]) / length(red_I69_cov))*100
+```
+
+```{r DOC barplot}
+barplot(as.numeric(as.vector(multiqc_general_stats[-1,2])), names.arg = 1:54, las = 2, main = "Genome DOC", ylab = "DOC", xlab = "HiC Scaffold", ylim = c(0,20000))
+
+```
