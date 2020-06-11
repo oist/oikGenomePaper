@@ -44,12 +44,12 @@ lines( smooth.spline( lengths_genes$length~log10(lengths_genes$gene)), col='#e41
 abline(v=log10(maxprob_gene), col='#595959', lty=3)
 text(x=3.5, y=15, labels=paste("Maximum prob.:", maxprob_gene, 'bp'))
 
-plot(lengths_exons$length~log10(lengths_exons$exon), type='p', col=adjustcolor('#a6cee3', 0.1), pch=16,  ylab='Count', xlab='log10(Length (bp))', main='log10(Exon length distribution)')
+plot(lengths_exons$length~log10(lengths_exons$exon), type='p', col=adjustcolor('#a6cee3', 0.2), pch=16,  ylab='Count', xlab='log10(Length (bp))', main='log10(Exon length distribution)')
 lines( smooth.spline(lengths_exons$length~log10(lengths_exons$exon)), col='#1f78b4')
 abline(v=log10(maxprob_exon), col='#595959', lty=3)
 text(x=3, y=300, labels=paste("Maximum prob.:", maxprob_exon, 'bp'))
 
-plot(lengths_introns$length~log10(lengths_introns$intron), type='p', col=adjustcolor('#b2df8a', 0.1), pch=16,  ylab='Count', xlab='log10(Length (bp))', main='log10(Intron length distribution)', ylim=c(-500,6335))
+plot(lengths_introns$length~log10(lengths_introns$intron), type='p', col=adjustcolor('#b2df8a', 0.2), pch=16,  ylab='Count', xlab='log10(Length (bp))', main='log10(Intron length distribution)', ylim=c(-500,6335))
 lines( smooth.spline(lengths_introns$length~log10(lengths_introns$intron)), col='#33a02c')
 abline(v=log10(maxprob_intron), col='#595959', lty=3)
 text(x=2.25, y=3000, labels=paste("Maximum prob.:", maxprob_intron, 'bp'))
