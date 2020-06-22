@@ -35,7 +35,7 @@ perl -ape '
   $_ = "$_;Parent=$parent\n"
 ' |
 # Add a dummy line so that the last syntenic region is also computed.
-sed '$a.1.\t.2.\t.3.\t.4.\t.5.\t.6.\t.7.\t.8.\t.9.' |
+sed '$askipme\t.\tmatch\t.\t.\t.\t.\t.\t.\tParent=skipme' |
 # Output a "syntenic_region" line grouping each line that have the same Parent.
 # Swap commented line for stranded output (but also see the sort command above).
 perl -apE '
@@ -48,6 +48,7 @@ perl -apE '
     #say join("\t", $P[seqname], ".", "syntenic_region", $P[start], $P[end], ".", $P[strand], ".", "ID=$parent;Name=$name") ;
     say join("\t", $P[seqname], ".", "syntenic_region", $P[start], $P[end], ".", ".", ".", "ID=$parent;Name=$name") ;
     @P = @F ;
+    last if $curparent eq "skipme" ;
     $parent = $curparent ;
     next} ;
   @P = @F if not @P ;
