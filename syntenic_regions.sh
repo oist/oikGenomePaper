@@ -34,6 +34,8 @@ perl -ape '
   @P = @F ;
   $_ = "$_;Parent=$parent\n"
 ' |
+# Add a dummy line so that the last syntenic region is also computed.
+sed '$a.1.\t.2.\t.3.\t.4.\t.5.\t.6.\t.7.\t.8.\t.9.' |
 # Output a "syntenic_region" line grouping each line that have the same Parent.
 # Swap commented line for stranded output (but also see the sort command above).
 perl -apE '
