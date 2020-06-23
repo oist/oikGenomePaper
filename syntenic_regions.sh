@@ -27,7 +27,7 @@ perl -ape '
   s/.+?\t// ; # Remove sort key
   next unless $F[type] eq "match" ;
   chomp ;
-  $parent = "$F[target]_$F[start]"
+  $parent = "$F[target]_$F[seqname]_$F[start]"
     unless ($P[target]      eq $F[target]  &&
             $P[seqname]     eq $F[seqname] &&
             $P[end] + 500000 > $F[start]) ;
