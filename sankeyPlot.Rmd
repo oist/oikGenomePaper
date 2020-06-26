@@ -1,0 +1,358 @@
+---
+title: "Norway-Oki Sankey Plot"
+output: html_document
+---
+
+```{r packages}
+library(BSgenome.Odioica.local.Okinawa.I69)
+library(GenomicBreaks)
+library(readr)
+library(RColorBrewer)
+library(networkD3)
+```
+
+## Data
+
+```{r}
+#### Norway linkage groups ###
+
+# Y chr
+n_y <- c(356, 8, 181, 29, 134, 289, 140, 158, 206, 318, 123, 271, 76, 89, 76, 89, 146, 8, 143, 55, 99, 154, 8, 8, 22, 106, 
+         238, 346, 46, 29, 74, 112, 74, 61, 99, 260, 61, 368)
+
+# Y-like (B)
+n_y_B <- c(82, 261, 219, 88, 44, 164, 186)
+
+# X chr
+n_x <- c(361, 160, 272, 67, 337, 148, 144, 209, 32, 150, 32, 210, 161, 75, 45, 52, 17, 36, 6, 65, 330, 65, 30, 26, 229, 
+         103, 359, 35, 20, 35, 20, 58, 34, 240, 117, 42, 239, 283, 13, 119, 211, 195, 119, 21, 23, 189, 23, 332, 328, 
+         265, 192, 147, 196, 223, 228, 86, 2, 130, 193, 243, 180, 139, 170, 114, 111, 233, 339, 282, 100, 173)
+
+# Pseudo-autosomal LG 
+n_pa <- c(73, 11, 83, 37, 49, 216, 49, 133, 49, 259, 33, 121, 33, 121, 80, 390, 157, 100, 157, 31, 342, 31, 262, 327, 16, 
+          267, 16, 274, 16, 245, 16, 312, 38, 264, 38, 124, 377, 83, 371, 41, 155, 125, 142, 248, 357, 10, 10, 107, 85, 
+          194, 311, 25, 19, 64, 341, 104, 255, 10, 87, 257, 313, 293, 145, 48, 298, 48, 135, 50, 303, 226, 91, 95, 294, 
+          277, 122, 352, 315, 296, 244, 120, 208, 249, 169, 118, 58, 62, 187, 51, 92, 200, 101, 322, 251, 188, 69, 316, 
+          225, 69, 218, 18, 266, 18, 183, 18, 176, 320, 72)
+
+# LG1
+n_lg1 <- c(199, 2, 395, 12, 236, 28, 4, 14, 4, 263, 4, 3, 24, 40, 363, 40, 77, 68, 137, 78, 66)
+
+# LG2
+n_lg2 <- c(366, 97, 81, 198, 81, 43, 177, 43, 98, 109, 372, 7, 250, 7, 27, 212, 254, 39, 241, 39, 15, 258, 8, 8, 284, 349, 
+           224, 59, 5, 178, 5, 3, 1, 110, 70, 203, 141, 57, 9, 286, 71, 159, 197, 105, 149, 191)
+
+# not placed
+n_np <- c(102, 227, 151, 297, 344, 365, 60, 329, 153, 56, 93, 90, 47, 94, 84, 220, 232, 54, 179, 152, 115, 256, 79, 190, 
+          261, 231, 246, 162, 217, 205, 301, 253, 201, 300, 116, 63, 126, 131, 235, 132, 127, 53)
+
+```
+
+
+```{r scaffold positions}
+# require scaf info
+
+# Y chr
+scaf_n_y <- c(2, 4, 13, 14, 15, 16, 18, 21, 23, 24, 25, 30, 31, 33, 34, 35, 37)
+
+# Y-like B
+scaf_n_y_B <- NA
+
+# X chr
+scaf_n_x <- c(9, 11, 20, 22, 28, 29, 30, 31, 32, 40, 43, 45, 47, 57)
+
+# Pseudo-autosomal LG
+scaf_n_pa <- c(5, 7, 9, 11, 12, 13, 14, 15, 17, 18, 19, 20, 22, 25, 27, 29, 31, 33, 35, 38, 46, 47, 56, 58, 64, 66, 85, 88, 95, 98, 100, 102, 104)
+
+# LG1
+scaf_n_lg1 <- c(2, 7, 9, 11, 12, 14, 16, 18)
+
+# LG2
+scaf_n_lg2 <- c(3, 5, 6, 8, 12, 14, 18, 20, 23, 24, 29, 31, 32)
+
+# not places
+scaf_n_np <- NA
+
+```
+
+```{r}
+# Y chr
+s_n_y <- c(0, 430, 0, 0, 100, 40, 150, 50, 490, 950, 140, 0, 0, 84, 0, 0, 64)
+e_n_y <- c(150, NA, 95, 35, NA, NA, 490, NA, 815, 1045, NA, 430, 84, NA, 64, 50, NA)
+
+# Y-like B
+#NA
+
+# X chr
+s_n_x <- c(0, 280, 67, 0, 0, 0, 300, 61, 0, 56, 0, 0, 70, 545)
+e_n_x <- c(275, NA, NA, 64, 295, 57, NA, NA, 70, NA, 54, 65, NA, 635)
+
+# Pseudo-autosomal LG
+s_n_pa <- c(0, 80, 155, 45, 0, 0, 55, 55, 55, 0, 0, 132, 0, 666, 390, 68, 0, 0, 335, 60, 0, 125, 30, 975, 0, 190, 75, 0, 0, 35, 0, 107, 325)
+e_n_pa <- c(75, 150, NA, NA, 45, 35, NA, NA, NA, 50, 45, NA, 128, NA, 664, 386, 62, 330, NA, 100, 115, 960, 85, NA, 185, NA, NA, 250, 30, NA, 104, 320, NA)
+
+# LG1
+s_n_lg1 <- c(640, 0, 920, 1210, 710, 0, 200, 65)
+e_n_lg1 <- c(NA, 900, 1190, NA, NA, 190, NA, NA)
+
+# LG2
+s_n_lg2 <- c(110, 0, 235, 0, 0, 438, 285, 0, 1050, 820, 0, 810, 0)
+e_n_lg2 <- c(NA, 105, NA, 220, 427, NA, NA, 280, NA, 940, 790, NA, 690)
+
+# not placed
+#NA
+
+```
+
+
+```{r data}
+
+pw_O_N <- rtracklayer::import.bed("C:/Users/CHARLOTTE-WEST/R-Packages/Oki_Nor_Circos_Plot/data/I69-4__Norway.bed", seqinfo = seqinfo(BSgenome.Odioica.local.Okinawa.I69))
+
+pw_O_N$query <- GRanges(pw_O_N$name)
+pw_O_N$name <- NULL
+pw_O_N$score <- NULL
+
+```
+
+
+# Data processing
+
+```{r}
+# We require info only from scaffolds 1-5 of I69-4
+s1 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_1")
+s2 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_2")
+s3 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_3")
+s4 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_4")
+s5 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_5")
+
+s1_5 <- c(s1, s2, s3, s4, s5)
+
+red_O_N <- pw_O_N[s1_5]
+
+```
+
+```{r}
+# concatenate all scaffolds from LGs
+un_y <- unique(n_y)
+
+un_y_B <- unique(n_y_B)
+
+un_x <- unique(n_x)
+
+un_pa <- unique(n_pa)
+
+un_lg1 <- unique(n_lg1)
+
+un_lg2 <- unique(n_lg2)
+
+un_np <- unique(n_np)
+
+
+lgs <- c(un_y, un_y_B, un_x, un_pa, un_lg1, un_lg2)
+lgs_names <- c(rep("Y", length(un_y)), rep("Y-like", length(un_y_B)), rep("X", length(un_x)) , rep("PA", length(un_pa)), rep("LG1", length(un_lg1)), rep("LG2", length(un_lg2)))
+
+```
+
+```{r assigning LGs}
+# norway aligned scaffold numbers
+nor_a_scafs <- readr::parse_number(as.vector(seqnames(red_O_N$query)))
+nor_a_match <- match(nor_a_scafs, lgs)
+nor_LG <- lgs_names[nor_a_match]
+
+red_O_N$LG <- nor_LG
+
+```
+
+
+```{r}
+# find where the same scaffolds are found in different linkage groups
+
+
+match_list <- list(un_y, un_y_B, un_x, un_pa, un_lg1, un_lg2, un_np)
+og_list <- list(n_y, n_y_B, n_x, n_pa, n_lg1, n_lg2, n_np)
+place_list <- list(scaf_n_y, c(), scaf_n_x, scaf_n_pa, scaf_n_lg1, scaf_n_lg2, c())
+coord_list_s <- list(s_n_y, c(), s_n_x, s_n_pa, s_n_lg1, s_n_lg2, c())
+coord_list_e <- list(e_n_y, c(), e_n_x, e_n_pa, e_n_lg1, e_n_lg2, c())
+
+match_mat <- matrix(list(), ncol = 7, nrow = 7)
+rownames(match_mat) <- c("Y", "Y-like", "X", "PA", "LG1", "LG2", "np")
+colnames(match_mat) <- c("Y", "Y-like", "X", "PA", "LG1", "LG2", "np")
+
+# i list
+# j list
+# starts list
+# ends list
+
+for (i in 1:7){
+  for (j in 1:7){
+    if (i == j){
+      next()
+    }
+    else{
+      i_v <- match_list[[i]]
+      j_v <- match_list[[j]]
+      if (any((is.na(match(i_v, j_v))) == FALSE)){
+        match_mat[[i,j]] <- i_v[!is.na(match(i_v, j_v))]
+      }
+    }
+  }
+}
+
+# scaffold 261 is reported to be in both Y-like B and not placed, in its entirety. Therefore it is to be excluded from both.
+# scaffold 100 is also reported in both chr X (in its entirety) and in PAR (0-50kb). Therefore it is to be excluded from both.
+
+
+correction_mat <- matrix(ncol = 4)
+
+for (i in 1:7){
+  for (j in 7:1){
+    if (i == j || j < i){
+      next()
+    }
+    i_v <- match_list[[i]]
+    j_v <- match_list[[j]]
+    if (any((is.na(match(i_v, j_v))) == FALSE)){
+      i_j_match_vec <- i_v[!is.na(match(i_v, j_v))]
+      if (i_j_match_vec == 261){
+        next()
+      }
+      for (k in 1:length(i_j_match_vec)){
+        i_j_match <- i_j_match_vec[k]
+        
+        i_which <- which(i_j_match == og_list[[i]])
+        j_which <- which(i_j_match == og_list[[j]])
+        
+        i_idx_len <- length(i_which)
+        j_idx_len <- length(j_which)
+        
+        i_mat <- matrix(ncol = 4, nrow = i_idx_len)
+        j_mat <- matrix(ncol = 4, nrow = j_idx_len)
+        
+        for (i_idx in 1:i_idx_len){
+          i_mat[i_idx, 1] <- rownames(match_mat)[i]
+          i_mat[i_idx, 2] <- i_j_match
+          i_mat[i_idx, 3] <- coord_list_s[[i]][match(which(og_list[[i]] == i_j_match), place_list[[i]])][i_idx]
+          i_mat[i_idx, 4] <- coord_list_e[[i]][match(which(og_list[[i]] == i_j_match), place_list[[i]])][i_idx]
+        }
+        for (j_idx in 1:j_idx_len){
+          j_mat[j_idx, 1] <- colnames(match_mat)[j]
+          j_mat[j_idx, 2] <- i_j_match
+          j_mat[j_idx, 3] <- coord_list_s[[j]][match(which(og_list[[j]] == i_j_match), place_list[[j]])][j_idx]
+          j_mat[j_idx, 4] <- coord_list_e[[j]][match(which(og_list[[j]] == i_j_match), place_list[[j]])][j_idx]
+        }
+        ij_mat <- rbind(i_mat, j_mat)
+        correction_mat <- rbind(correction_mat, ij_mat)
+      }
+    }
+  }
+}
+
+# remove scaffold 100 & first row
+correction_mat <- correction_mat[!as.numeric(correction_mat[,2]) == 100,]
+correction_mat <- correction_mat[-1,]
+
+```
+
+
+```{r}
+# Final edits to assigned Norway LGs
+
+# 261
+idx_261 <- which(nor_a_scafs == 261)
+red_O_N$LG[idx_261] <- NA
+
+# 100
+idx_100 <- which(nor_a_scafs == 100)
+red_O_N$LG[idx_100] <- NA
+
+# Main loop
+for (i in 1:nrow(correction_mat)){
+  if(!is.na(correction_mat[i,4])){
+    idx_now <- (nor_a_scafs == as.numeric(correction_mat[i,2])) & (start(red_O_N$query) > as.numeric(correction_mat[i,3])*1000) & (end(red_O_N$query) < as.numeric(correction_mat[i,4])*1000)
+  }
+  else{
+    idx_now <- (nor_a_scafs == as.numeric(correction_mat[i,2])) & (start(red_O_N$query) > as.numeric(correction_mat[i,3])*1000)
+  }
+  red_O_N$LG[idx_now] <- correction_mat[i,1]
+}
+
+
+```
+
+```{r circos matrix}
+circ_mat <- matrix(data = NA, nrow = 5, ncol = 7)
+rownames(circ_mat) <- c("chr X", "PA", "chr 2", "chr 1", "chr Y") #1-5
+colnames(circ_mat) <- c("N chr X", "N PA", "N LG2", "N LG1", "N chr Y", "N other", "none") #1-7
+LG_names <- c("X", "PA", "LG2", "LG1", "Y")
+
+for (i in 1:5){
+  scaf_now <- seqlevelsInUse(red_O_N)[i]
+  gr_now <- red_O_N[seqnames(red_O_N) == scaf_now]
+  for (j in 1:7){
+    if (j < 6){
+      idx <- gr_now$LG == LG_names[j]
+      idx[is.na(idx)] <- FALSE
+      circ_mat[i,j] <- sum(width(gr_now[idx]))
+    }
+    else if (j == 6){
+      circ_mat[i,j] <- sum(width(gr_now[is.na(gr_now$LG)]))
+    }
+    else if (j == 7){
+      circ_mat[i,j] <- as.numeric(seqlengths(red_O_N)[i]) - sum(width(gr_now))
+    }
+  }
+}
+```
+
+```{r networkD3}
+
+# Make new matrix
+sankey_mat <- matrix(data = NA, nrow = (dim(circ_mat)[1]*dim(circ_mat)[2]), ncol = 5)
+k <- 1
+for (i in 1:dim(circ_mat)[1]){
+  for (j in 1:dim(circ_mat)[2]){
+    sankey_mat[k,1] <- rownames(circ_mat)[i]
+    sankey_mat[k,2] <- colnames(circ_mat)[j]
+    sankey_mat[k,3] <- circ_mat[i,j]
+    sankey_mat[k,4] <- i - 1
+    sankey_mat[k,5] <- j + 4
+    k <- k + 1
+  }
+}
+
+# remove 'none'
+sankey_mat <- sankey_mat[sankey_mat[,2] != "none",]
+
+chr_names <- c("chr X", "PAR", "chr 2", "chr 1", "chr Y", "N chr X", "N PAR", "N LG2", "N LG1", "N chr Y", "N other")
+
+# link groups
+
+
+# create node group
+node_group <- c("chr X", "PA", "chr 2", "chr 1", "chr Y", "chr X", "PA", "chr 2", "chr 1", "chr Y", "other")
+node_group <- gsub(" ", "", node_group)
+
+nodes <- data.frame(node = c(0:10), name = chr_names, node_group)
+link_group <- as.character(sankey_mat[,1])
+link_group <- gsub(" ", "", link_group)
+links <- data.frame(source = as.numeric(sankey_mat[,4]), target = as.numeric(sankey_mat[,5]), value = as.numeric(sankey_mat[,3]), link_group)
+
+
+# Colours
+#c("turquoise", "blue", "pink", "green", "yellow", "grey", "yellow", "green", "pink", "blue", "turquoise")
+#c("#66C2A5", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F", "#B3B3B3", "#FFD92F", "#A6D854", "#E78AC3", "#8DA0CB", "#66C2A5")
+link_group_uni <- unique(link_group)
+node_group_uni <- unique(node_group)
+uni_groups <- c(link_group_uni, node_group_uni)
+
+
+#########
+my_colours <- 'd3.scaleOrdinal() .domain(["chrX", "PA", "chr2", "chr1", "chrY", "other"]) .range(["#8DA0CB", "#FFD92F", "#A6D854", "#E78AC3", "#66C2A5", "#B3B3B3"]) '
+
+#######
+
+networkD3::sankeyNetwork(Links = links, Nodes = nodes, Source = 'source', Target = 'target', Value = 'value', NodeID = 'name', LinkGroup = 'link_group', NodeGroup = 'node_group', colourScale = my_colours, fontSize = 10)
+
+
+```
