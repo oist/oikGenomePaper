@@ -27,7 +27,7 @@ perl -ape '
   s/.+?\t// ; # Remove sort key
   next unless $F[type] eq "match" ;
   chomp ;
-  $parent = "$F[target]_$F[seqname]_$F[start]"
+  $parent = "$F[target]→$F[seqname]:$F[start]"
     unless ($P[target]      eq $F[target]  &&
             $P[seqname]     eq $F[seqname] &&
             $P[end] + 500000 > $F[start]) ;
@@ -44,7 +44,7 @@ perl -apE '
   next unless $F[type] eq "match" ;
   ($curparent) = /Parent=(.+)$/ ;
   if (defined ($parent) && $parent ne $curparent) {
-    $name = $parent =~ s/_[^_]*$//r ;
+    $name = $parent =~ s/→.*$//r ;
     #say join("\t", $P[seqname], ".", "syntenic_region", $P[start], $P[end], ".", $P[strand], ".", "ID=$parent;Name=$name") ;
     say join("\t", $P[seqname], ".", "syntenic_region", $P[start], $P[end], ".", ".", ".", "ID=$parent;Name=$name") ;
     @P = @F ;
