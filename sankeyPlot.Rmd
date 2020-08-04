@@ -4,6 +4,7 @@ output: html_document
 ---
 
 ```{r packages}
+library(BSgenome.Odioica.local.Odioica.reference.v3.0)
 library(BSgenome.Odioica.local.Okinawa.I69)
 library(GenomicBreaks)
 library(readr)
@@ -106,13 +107,11 @@ e_n_lg2 <- c(NA, 105, NA, 220, 427, NA, NA, 280, NA, 940, 790, NA, 690)
 
 
 ```{r data}
-
-pw_O_N <- rtracklayer::import.bed("C:/Users/CHARLOTTE-WEST/R-Packages/Oki_Nor_Circos_Plot/data/I69-4__Norway.bed", seqinfo = seqinfo(BSgenome.Odioica.local.Okinawa.I69))
-
-pw_O_N$query <- GRanges(pw_O_N$name)
-pw_O_N$name <- NULL
-pw_O_N$score <- NULL
-
+pw_O_N <- load_genomic_breaks("I69-4__Norway.syntenies.20200619.gff3",
+                              BSgenome.Odioica.local.Okinawa.I69,
+                              BSgenome.Odioica.local.Odioica.reference.v3.0)
+pw_O_N
+pw_O_N$query
 ```
 
 
