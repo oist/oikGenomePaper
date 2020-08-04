@@ -119,16 +119,7 @@ pw_O_N$query
 
 ```{r}
 # We require info only from scaffolds 1-5 of I69-4
-s1 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_1")
-s2 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_2")
-s3 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_3")
-s4 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_4")
-s5 <- which(as.vector(seqnames(pw_O_N)) == "HiC_scaffold_5")
-
-s1_5 <- c(s1, s2, s3, s4, s5)
-
-red_O_N <- pw_O_N[s1_5]
-
+red_O_N <- pw_O_N[seqnames(pw_O_N) %in% paste0("HiC_scaffold_", 1:5)]
 ```
 
 ```{r}
