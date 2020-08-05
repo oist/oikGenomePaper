@@ -292,13 +292,16 @@ for (i in 1:nrow(correction_mat)){
 ```
 
 ```{r circos matrix}
+red_O_N <- keepSeqlevels(red_O_N, seqlevelsInUse(red_O_N))
+seqlevels(red_O_N) <-  c("chr X", "PA", "chr 2", "chr 1", "chr Y")
+
 circ_mat <- matrix(data = NA, nrow = 5, ncol = 12)
-rownames(circ_mat) <- c("chr X", "PA", "chr 2", "chr 1", "chr Y") #1-5
-colnames(circ_mat) <- c("N chr X", "N PA", "N LG2", "N LG1", "N chr Y", "N other a", "N other b", "N other c", "N other d", "N other e", "N other f", "none") #1-7
-LG_names <- c("X", "PA", "LG2", "LG1", "Y", "UnA", "UnB", "UnC", "UnD", "UnE", "UnF")
+rownames(circ_mat) <- c("chr 1", "chr 2", "PA", "chr X", "chr Y") #1-5
+colnames(circ_mat) <- c("N LG1", "N other d", "N LG2", "N other a", "N other f", "N PA", "N other b", "N chr X", "N chr Y", "N other e", "N other c", "none") #1-7
+LG_names <-           c("LG1",      "UnD",     "LG2",    "UnA",        "UnF",     "PA",   "UnB",       "X",       "Y",          "UnE",      "UnC")
 
 for (i in 1:nrow(circ_mat)){
-  scaf_now <- seqlevelsInUse(red_O_N)[i]
+  scaf_now <- rownames(circ_mat)[i]
   gr_now <- red_O_N[seqnames(red_O_N) == scaf_now]
   for (j in 1:ncol(circ_mat)){
     if (j <= length(LG_names)){
@@ -335,13 +338,13 @@ for (i in 1:dim(circ_mat)[1]){
 # remove 'none'
 sankey_mat <- sankey_mat[sankey_mat[,2] != "none",]
 
-chr_names <- c("chr X", "PAR", "chr 2", "chr 1", "chr Y", "N chr X", "N PAR", "N LG2", "N LG1", "N chr Y", "N Un a", "N Un b", "N Un c", "N Un d", "N Un e", "N Un f")
+chr_names <- c("chr 1", "chr 2", "PAR", "chr X", "chr Y", "N LG1", "N Un d", "N LG2", "N Un a", "N Un f", "N PAR", "N Un b", "N chr X", "N chr Y", "N Un e", "N Un f")
 
 # link groups
 
 
 # create node group
-node_group <- c("chr X", "PA", "chr 2", "chr 1", "chr Y", "chr X", "PA", "chr 2", "chr 1", "chr Y", "chr 2", "PA", "other", "chr 1", "chr Y", "chr 2")
+node_group <- c("chr 1", "chr 2", "PA", "chr X", "chr Y", "chr 1", "chr 1", "chr 2", "chr 2", "chr 2", "PA", "PA", "chr X", "chr Y", "chr Y", "other")
 node_group <- gsub(" ", "", node_group)
 
 nodes <- data.frame(node = seq_along(chr_names) -1, name = chr_names, node_group)
