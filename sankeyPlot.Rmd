@@ -44,9 +44,15 @@ n_lg2 <- c(366, 97, 81, 198, 81, 43, 177, 43, 98, 109, 372, 7, 250, 7, 27, 212, 
            224, 59, 5, 178, 5, 3, 1, 110, 70, 203, 141, 57, 9, 286, 71, 159, 197, 105, 149, 191)
 
 # not placed
-n_np <- c(102, 227, 151, 297, 344, 365, 60, 329, 153, 56, 93, 90, 47, 94, 84, 220, 232, 54, 179, 152, 115, 256, 79, 190, 
-          261, 231, 246, 162, 217, 205, 301, 253, 201, 300, 116, 63, 126, 131, 235, 132, 127, 53)
+# n_np <- c(102, 227, 151, 297, 344, 365, 60, 329, 153, 56, 93, 90, 47, 94, 84, 220, 232, 54, 179, 152, 115, 256, 79, 190, 
+#          261, 231, 246, 162, 217, 205, 301, 253, 201, 300, 116, 63, 126, 131, 235, 132, 127, 53)
 
+n_np_a <- c(102, 227, 151, 297, 344, 365, 60, 329, 153, 56, 93, 90, 47)
+n_np_b <- c(94, 84, 220, 232, 54, 179, 152)
+n_np_c <- c(115, 256, 79, 190, 261)
+n_np_d <- c(231, 246, 162, 217, 205, 301, 253)
+n_np_e <- c(201, 300, 116)
+n_np_f <- c(63, 126, 131, 235, 132, 127, 53)
 ```
 
 
@@ -71,9 +77,9 @@ scaf_n_lg1 <- c(2, 7, 9, 11, 12, 14, 16, 18)
 # LG2
 scaf_n_lg2 <- c(3, 5, 6, 8, 12, 14, 18, 20, 23, 24, 29, 31, 32)
 
-# not places
-scaf_n_np <- NA
-
+# not placed
+#scaf_n_np <- NA
+scaf_n_np_a <- scaf_n_np_b <- scaf_n_np_c <- scaf_n_np_d <- scaf_n_np_e <- scaf_n_np_f <- NA
 ```
 
 ```{r}
@@ -136,12 +142,27 @@ un_lg1 <- unique(n_lg1)
 
 un_lg2 <- unique(n_lg2)
 
-un_np <- unique(n_np)
+# un_np <- unique(n_np)
+un_np_a <- unique(n_np_a)
+un_np_b <- unique(n_np_b)
+un_np_c <- unique(n_np_c)
+un_np_d <- unique(n_np_d)
+un_np_e <- unique(n_np_e)
+un_np_f <- unique(n_np_f)
 
-
-lgs <- c(un_y, un_y_B, un_x, un_pa, un_lg1, un_lg2)
-lgs_names <- c(rep("Y", length(un_y)), rep("Y-like", length(un_y_B)), rep("X", length(un_x)) , rep("PA", length(un_pa)), rep("LG1", length(un_lg1)), rep("LG2", length(un_lg2)))
-
+lgs <- c(un_y, un_y_B, un_x, un_pa, un_lg1, un_lg2, un_np_a, un_np_b, un_np_c, un_np_d, un_np_e, un_np_f)
+lgs_names <- c(rep("Y", length(un_y)),
+               rep("Y-like", length(un_y_B)),
+               rep("X", length(un_x)),
+               rep("PA", length(un_pa)),
+               rep("LG1", length(un_lg1)),
+               rep("LG2", length(un_lg2)),
+               rep("UnA", length(un_np_a)),
+               rep("UnB", length(un_np_b)),
+               rep("UnC", length(un_np_c)),
+               rep("UnD", length(un_np_d)),
+               rep("UnE", length(un_np_e)),
+               rep("UnF", length(un_np_f)))
 ```
 
 ```{r assigning LGs}
@@ -159,23 +180,23 @@ red_O_N$LG <- nor_LG
 # find where the same scaffolds are found in different linkage groups
 
 
-match_list <- list(un_y, un_y_B, un_x, un_pa, un_lg1, un_lg2, un_np)
-og_list <- list(n_y, n_y_B, n_x, n_pa, n_lg1, n_lg2, n_np)
-place_list <- list(scaf_n_y, c(), scaf_n_x, scaf_n_pa, scaf_n_lg1, scaf_n_lg2, c())
-coord_list_s <- list(s_n_y, c(), s_n_x, s_n_pa, s_n_lg1, s_n_lg2, c())
-coord_list_e <- list(e_n_y, c(), e_n_x, e_n_pa, e_n_lg1, e_n_lg2, c())
+match_list <- list(un_y, un_y_B, un_x, un_pa, un_lg1, un_lg2, un_np_a, un_np_b, un_np_c, un_np_d, un_np_e, un_np_f)
+og_list <- list(n_y, n_y_B, n_x, n_pa, n_lg1, n_lg2, n_np_a, n_np_b, n_np_c, n_np_d, n_np_e, n_np_f)
+place_list <- list(scaf_n_y, c(), scaf_n_x, scaf_n_pa, scaf_n_lg1, scaf_n_lg2, c(), c(), c(), c(), c(), c())
+coord_list_s <- list(s_n_y, c(), s_n_x, s_n_pa, s_n_lg1, s_n_lg2, c(), c(), c(), c(), c(), c())
+coord_list_e <- list(e_n_y, c(), e_n_x, e_n_pa, e_n_lg1, e_n_lg2, c(), c(), c(), c(), c(), c())
 
-match_mat <- matrix(list(), ncol = 7, nrow = 7)
-rownames(match_mat) <- c("Y", "Y-like", "X", "PA", "LG1", "LG2", "np")
-colnames(match_mat) <- c("Y", "Y-like", "X", "PA", "LG1", "LG2", "np")
+match_mat <- matrix(list(), ncol = 12, nrow = 12)
+rownames(match_mat) <- c("Y", "Y-like", "X", "PA", "LG1", "LG2", "np_a", "np_b", "np_c", "np_d", "np_e", "np_f")
+colnames(match_mat) <- rownames(match_mat)
 
 # i list
 # j list
 # starts list
 # ends list
 
-for (i in 1:7){
-  for (j in 1:7){
+for (i in 1:nrow(match_mat)){
+  for (j in 1:ncol(match_mat)){
     if (i == j){
       next()
     }
@@ -195,8 +216,8 @@ for (i in 1:7){
 
 correction_mat <- matrix(ncol = 4)
 
-for (i in 1:7){
-  for (j in 7:1){
+for (i in 1:nrow(match_mat)){
+  for (j in 1:ncol(match_mat)){
     if (i == j || j < i){
       next()
     }
@@ -271,24 +292,24 @@ for (i in 1:nrow(correction_mat)){
 ```
 
 ```{r circos matrix}
-circ_mat <- matrix(data = NA, nrow = 5, ncol = 7)
+circ_mat <- matrix(data = NA, nrow = 5, ncol = 12)
 rownames(circ_mat) <- c("chr X", "PA", "chr 2", "chr 1", "chr Y") #1-5
-colnames(circ_mat) <- c("N chr X", "N PA", "N LG2", "N LG1", "N chr Y", "N other", "none") #1-7
-LG_names <- c("X", "PA", "LG2", "LG1", "Y")
+colnames(circ_mat) <- c("N chr X", "N PA", "N LG2", "N LG1", "N chr Y", "N other a", "N other b", "N other c", "N other d", "N other e", "N other f", "none") #1-7
+LG_names <- c("X", "PA", "LG2", "LG1", "Y", "UnA", "UnB", "UnC", "UnD", "UnE", "UnF")
 
-for (i in 1:5){
+for (i in 1:nrow(circ_mat)){
   scaf_now <- seqlevelsInUse(red_O_N)[i]
   gr_now <- red_O_N[seqnames(red_O_N) == scaf_now]
-  for (j in 1:7){
-    if (j < 6){
+  for (j in 1:ncol(circ_mat)){
+    if (j <= length(LG_names)){
       idx <- gr_now$LG == LG_names[j]
       idx[is.na(idx)] <- FALSE
       circ_mat[i,j] <- sum(width(gr_now[idx]))
     }
-    else if (j == 6){
+    else if (j < ncol(circ_mat)){
       circ_mat[i,j] <- sum(width(gr_now[is.na(gr_now$LG)]))
     }
-    else if (j == 7){
+    else if (j == ncol(circ_mat)){
       circ_mat[i,j] <- as.numeric(seqlengths(red_O_N)[i]) - sum(width(gr_now))
     }
   }
@@ -314,16 +335,16 @@ for (i in 1:dim(circ_mat)[1]){
 # remove 'none'
 sankey_mat <- sankey_mat[sankey_mat[,2] != "none",]
 
-chr_names <- c("chr X", "PAR", "chr 2", "chr 1", "chr Y", "N chr X", "N PAR", "N LG2", "N LG1", "N chr Y", "N other")
+chr_names <- c("chr X", "PAR", "chr 2", "chr 1", "chr Y", "N chr X", "N PAR", "N LG2", "N LG1", "N chr Y", "N Un a", "N Un b", "N Un c", "N Un d", "N Un e", "N Un f")
 
 # link groups
 
 
 # create node group
-node_group <- c("chr X", "PA", "chr 2", "chr 1", "chr Y", "chr X", "PA", "chr 2", "chr 1", "chr Y", "other")
+node_group <- c("chr X", "PA", "chr 2", "chr 1", "chr Y", "chr X", "PA", "chr 2", "chr 1", "chr Y", "chr 2", "PA", "other", "chr 1", "chr Y", "chr 2")
 node_group <- gsub(" ", "", node_group)
 
-nodes <- data.frame(node = c(0:10), name = chr_names, node_group)
+nodes <- data.frame(node = seq_along(chr_names) -1, name = chr_names, node_group)
 link_group <- as.character(sankey_mat[,1])
 link_group <- gsub(" ", "", link_group)
 links <- data.frame(source = as.numeric(sankey_mat[,4]), target = as.numeric(sankey_mat[,5]), value = as.numeric(sankey_mat[,3]), link_group)
