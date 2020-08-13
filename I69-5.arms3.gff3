@@ -1,0 +1,9 @@
+##gff-version 3
+chr1	rtracklayer	sequence_feature	1	5191657	.	+	.	Name=chr1 short arm
+chr1	rtracklayer	sequence_feature	5192156	14533022	-	.	.	Name=chr1 long arm
+chr2	rtracklayer	sequence_feature	1	5707009	.	+	.	Name=chr2 short arm
+chr2	rtracklayer	sequence_feature	5707508	16158756	-	.	.	Name=chr2 long arm
+PAR	rtracklayer	sequence_feature	1	6029625	.	+	.	Name=PAR short arm
+PAR	rtracklayer	sequence_feature	6030124	17092476	-	.	.	Name=PAR long arm
+XSR	rtracklayer	sequence_feature	1	12959145	+	.	.	Name=X-specific region
+YSR	rtracklayer	sequence_feature	1	2916375	.	+	.	Name=Y-specific region
