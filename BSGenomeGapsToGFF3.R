@@ -14,4 +14,4 @@ ranges <- sapply(chrs, getGaps, BSgenome.Odioica.local.Okinawa.I69)
 
 ranges <- unlist(as(ranges, "GRangesList"))
 
-rtracklayer::export.gff3(ranges, "~/I69.gaps.gff3")
+rtracklayer::export.gff3(ranges, "~/I69-5.gaps.gff3")
