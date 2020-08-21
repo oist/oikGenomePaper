@@ -1,6 +1,10 @@
 ---
 title: "Norway-Oki Sankey Plot"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r packages}
@@ -113,7 +117,7 @@ e_n_lg2 <- c(NA, 105, NA, 220, 427, NA, NA, 280, NA, 940, 790, NA, 690)
 
 
 ```{r data}
-pw_O_N <- load_genomic_breaks("I69-4__Norway.syntenies.20200619.gff3",
+pw_O_N <- load_genomic_breaks("I69-5__Norway.gff3",
                               BSgenome.Odioica.local.Okinawa.I69,
                               BSgenome.Odioica.local.Odioica.reference.v3.0)
 pw_O_N
@@ -125,7 +129,7 @@ pw_O_N$query
 
 ```{r}
 # We require info only from scaffolds 1-5 of I69-4
-red_O_N <- pw_O_N[seqnames(pw_O_N) %in% paste0("HiC_scaffold_", 1:5)]
+red_O_N <- pw_O_N[seqnames(pw_O_N) %in% c("chr1", "chr2", "PAR", "XSR", "YSR")]
 ```
 
 ```{r}
@@ -293,7 +297,7 @@ for (i in 1:nrow(correction_mat)){
 
 ```{r circos matrix}
 red_O_N <- keepSeqlevels(red_O_N, seqlevelsInUse(red_O_N))
-seqlevels(red_O_N) <-  c("chr X", "PA", "chr 2", "chr 1", "chr Y")
+seqlevels(red_O_N) <-  c("chr 1", "chr 2", "PA", "chr X", "chr Y")
 
 circ_mat <- matrix(data = NA, nrow = 5, ncol = 12)
 rownames(circ_mat) <- c("chr 1", "chr 2", "PA", "chr X", "chr Y") #1-5
@@ -366,7 +370,9 @@ my_colours <- 'd3.scaleOrdinal() .domain(["chrX", "PA", "chr2", "chr1", "chrY", 
 
 #######
 
-networkD3::sankeyNetwork(Links = links, Nodes = nodes, Source = 'source', Target = 'target', Value = 'value', NodeID = 'name', LinkGroup = 'link_group', NodeGroup = 'node_group', colourScale = my_colours, fontSize = 10)
+sankeyPlot <- function() {
+  networkD3::sankeyNetwork(Links = links, Nodes = nodes, Source = 'source', Target = 'target', Value = 'value', NodeID = 'name', LinkGroup = 'link_group', NodeGroup = 'node_group', colourScale = my_colours, fontSize = 10)
+}
 
-
+sankeyPlot()
 ```
