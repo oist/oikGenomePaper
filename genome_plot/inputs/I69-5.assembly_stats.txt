@@ -1,0 +1,15 @@
+Assembly size	64281565
+Number of bases	64281565
+Number of bases (excluding undetermined characters)	64270065
+Number of masked positions	9252993
+Percent masked	14.39
+Number of contigs	19
+Smallest contig	2887
+Largest contig	17092476
+Average contig length	3383240.26
+Median contig length	57957.00
+Contig length standard deviation	6339828.56
+N50	17092476
+N90	12959145
+Whole-genome GC	41.05
+Whole-genome coverage	222.86

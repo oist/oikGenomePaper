@@ -1,0 +1,27 @@
+##gff-version 3
+##source-version Gaps_in_I69-5_sequence_feature 1.48.0
+##date 2020-08-07
+##genome-build .	I69-5
+chr1	Gaps_in_I69-5_sequence_feature	sequence_feature	3694308	3694807	.	.	.	ID=chr1
+chr1	Gaps_in_I69-5_sequence_feature	sequence_feature	5191657	5192156	.	.	.	ID=chr1
+chr1	Gaps_in_I69-5_sequence_feature	sequence_feature	10165326	10165825	.	.	.	ID=chr1
+chr1	Gaps_in_I69-5_sequence_feature	sequence_feature	14510994	14511493	.	.	.	ID=chr1
+chr1	Gaps_in_I69-5_sequence_feature	sequence_feature	14527652	14528151	.	.	.	ID=chr1
+chr2	Gaps_in_I69-5_sequence_feature	sequence_feature	3558725	3559224	.	.	.	ID=chr2
+chr2	Gaps_in_I69-5_sequence_feature	sequence_feature	4638001	4638500	.	.	.	ID=chr2
+chr2	Gaps_in_I69-5_sequence_feature	sequence_feature	5707009	5707508	.	.	.	ID=chr2
+chr2	Gaps_in_I69-5_sequence_feature	sequence_feature	10407648	10408147	.	.	.	ID=chr2
+chr2	Gaps_in_I69-5_sequence_feature	sequence_feature	10431368	10431867	.	.	.	ID=chr2
+chr2	Gaps_in_I69-5_sequence_feature	sequence_feature	10454786	10455285	.	.	.	ID=chr2
+chr2	Gaps_in_I69-5_sequence_feature	sequence_feature	10517882	10518381	.	.	.	ID=chr2
+chr2	Gaps_in_I69-5_sequence_feature	sequence_feature	12257731	12258230	.	.	.	ID=chr2
+chr2	Gaps_in_I69-5_sequence_feature	sequence_feature	12364269	12364768	.	.	.	ID=chr2
+PAR	Gaps_in_I69-5_sequence_feature	sequence_feature	6029625	6030124	.	.	.	ID=PAR
+PAR	Gaps_in_I69-5_sequence_feature	sequence_feature	13315266	13315765	.	.	.	ID=PAR
+PAR	Gaps_in_I69-5_sequence_feature	sequence_feature	13335809	13336308	.	.	.	ID=PAR
+PAR	Gaps_in_I69-5_sequence_feature	sequence_feature	14653410	14653909	.	.	.	ID=PAR
+PAR	Gaps_in_I69-5_sequence_feature	sequence_feature	14701212	14701711	.	.	.	ID=PAR
+PAR	Gaps_in_I69-5_sequence_feature	sequence_feature	14734399	14734898	.	.	.	ID=PAR
+PAR	Gaps_in_I69-5_sequence_feature	sequence_feature	15516211	15516710	.	.	.	ID=PAR
+XSR	Gaps_in_I69-5_sequence_feature	sequence_feature	7898948	7899447	.	.	.	ID=XSR
+YSR	Gaps_in_I69-5_sequence_feature	sequence_feature	1701025	1701524	.	.	.	ID=YSR
