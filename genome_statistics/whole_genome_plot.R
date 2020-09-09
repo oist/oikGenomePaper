@@ -154,7 +154,7 @@ override_minimums_with_0 = FALSE
 if(override_minimums_with_0){
 	if(overall_gc_min < 0){
 		overall_gc_min <- 0
-	})
+	}
 	if(overall_cov_min < 0){
 		overall_cov_min <- 0
 	}
