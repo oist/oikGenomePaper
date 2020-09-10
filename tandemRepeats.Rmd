@@ -1,0 +1,53 @@
+---
+title: "Tandem repeats"
+output: 
+  html_document: 
+    keep_md: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+requireNamespace("rtracklayer")
+suppressPackageStartupMessages(library("GenomicRanges"))
+library("BSgenome.Odioica.local.Okinawa.I69")
+```
+
+
+```{r}
+loadAndReportChecksum <- function (file) {
+  cat(system2("md5sum", file, stdout = TRUE))
+  gr <- rtracklayer::import.gff3(file,
+                                 genome = "BSgenome.Odioica.local.Okinawa.I69")
+  strand(gr) <- "*"
+  gr
+}
+
+tantan100  <- loadAndReportChecksum("~/FromSango/I69-4.tantan.f4.w100.gff3")
+tantan2000 <- loadAndReportChecksum("~/FromSango/I69-4.tantan.f4.w2000.gff3")
+ultra100   <- loadAndReportChecksum("~/FromSango/I69-4.ultra.p100.gff3")
+ultra2000  <- loadAndReportChecksum("~/FromSango/I69-4.ultra.p2000.gff3")
+```
+
+```{r}
+totLength <- function(X) sum(width(reduce(X)))
+sapply(list(tantan100, tantan2000, ultra100, ultra2000), totLength)
+totLength(intersect(tantan100, tantan2000))
+totLength(intersect(ultra100, ultra2000))
+totLength(setdiff(tantan2000, tantan100))
+totLength(setdiff(ultra2000, ultra100))
+totLength(union(tantan100, ultra2000))
+totLength(setdiff(tantan100, ultra2000))
+```
+
+```{r}
+Ultra <- ultra2000[seqnames(ultra2000) %in% paste0("HiC_scaffold_", 1:5)]
+tail(Ultra[order(width(Ultra))], n=10)
+tail(Ultra[order(as.numeric(Ultra$Period))], n=10)
+
+
+Tantan <- tantan2000[seqnames(tantan2000) %in% paste0("HiC_scaffold_", 1:5)]
+tail(Tantan[order(width(Tantan))], n=10)
+
+
+```
