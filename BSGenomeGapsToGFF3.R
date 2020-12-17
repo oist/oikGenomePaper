@@ -1,4 +1,4 @@
-library("BSgenome.Odioica.local.Okinawa.I69")
+library("BSgenome.Odioica.local.OKI2018.I69")
 
 getGaps <- function(chr, BSgenome) {
   m <- matchPattern("N", BSgenome[[chr]])
@@ -8,10 +8,10 @@ getGaps <- function(chr, BSgenome) {
   GRanges(chr, IRanges(start(m), end(m)), seqinfo=seqinfo(BSgenome))        
 }
 
-chrs <- seqlevels(BSgenome.Odioica.local.Okinawa.I69)
+chrs <- seqlevels(OKI2018_I69)
 
-ranges <- sapply(chrs, getGaps, BSgenome.Odioica.local.Okinawa.I69)
+ranges <- sapply(chrs, getGaps, OKI2018_I69)
 
 ranges <- unlist(as(ranges, "GRangesList"))
 
-rtracklayer::export.gff3(ranges, "~/I69-5.gaps.gff3")
+rtracklayer::export.gff3(ranges, "~/OKI2018_I69.gaps.gff3")
